@@ -1,7 +1,9 @@
 Flask
 Werkzeug
 mediapipe-lite
+fpdf
 opencv-python
 gunicorn
 numpy
+
 
