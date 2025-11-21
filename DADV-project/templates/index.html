@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VYORIX - Pose Estimation</title>
+
+  <!-- ✅ Correct static paths -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="icon" href="{{ url_for('static', filename='Pose2.png') }}" type="image/png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+</head>
+<body>
+  <!-- ===== HEADER ===== -->
+  <header>
+    <nav class="navbar">
+      <div class="logo">
+        <a href="#">
+          <img src="{{ url_for('static', filename='vyorix.png') }}" alt="VYORIX Logo">
+          <center>VYORIX</center>
+        </a>
+      </div>
+
+      <ul class="nav-links">
+        <li><a href="#">Home</a></li>
+
+        {% if session.get('logged_in') %}
+          <!-- ✅ Logout button shown when logged in -->
+          <li><a href="{{ url_for('pose_backend') }}">Dashboard</a></li>
+          <li><a href="{{ url_for('logout') }}" class="logout-btn">Logout</a></li>
+        {% else %}
+          <!-- Normal menu when not logged in -->
+          <li><a href="{{ url_for('login') }}" id="loginBtn">Login</a></li>
+          <li><a href="{{ url_for('login') }}" id="registerBtn">Create Account</a></li>
+          <li><a href="{{ url_for('login') }}" id="createBtn">Create</a></li>
+        {% endif %}
+      </ul>
+    </nav>
+  </header>
+
+  <!-- ===== HERO SECTION ===== -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1>Welcome to the World of <span class="highlight">VYORIX</span></h1>
+      <marquee class="team-marquee">Made by LateralDimTeam</marquee>
+
+      <div class="main-info">
+        <p class="intro-text">
+          Experience the next generation of <b>Pose Estimation</b> — a fusion of Artificial Intelligence and Sports Analytics.
+          VYORIX helps athletes and coaches gain deep insights into performance metrics, motion tracking, and pose optimization.
+        </p>
+
+        <ul class="info-list">
+          <li><b>Pose Estimation</b> detects and analyzes body joint positions in images or videos.</li>
+          <li>Identifies key joints like shoulders, elbows, knees, and ankles for motion understanding.</li>
+          <li>Used in <b>sports analytics</b> to monitor and enhance athlete performance without sensors.</li>
+          <li>Employs <b>deep learning models</b> to measure reaction time and posture alignment.</li>
+          <li><b>VYORIX</b> combines AI with vision tracking to offer real-time insights for coaches and athletes.</li>
+          <li>Helps improve <b>form accuracy</b>, prevent injuries, and optimize performance visualization.</li>
+        </ul>
+
+        <a href="#" class="btn">Learn More</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SPECIAL FEATURES ===== -->
+  <section class="features">
+    <h2>Special Features</h2>
+
+    <div class="feature-item">
+      <h3>Real-Time Motion Analysis</h3>
+      <a href="{{ url_for('login') }}">
+        <video class="hover-video" muted loop>
+          <source src="{{ url_for('static', filename='video.mp4') }}" type="video/mp4">
+        </video>
+      </a>
+      <p>Our system captures athlete movements frame-by-frame to deliver high-precision pose metrics.</p>
+    </div>
+
+    <div class="feature-item">
+      <h3>Dynamic Pose Visualization</h3>
+      <a href="{{ url_for('login') }}">
+        <img src="{{ url_for('static', filename='Pose-IMG.jpg') }}" alt="Pose Analysis" class="hover-img">
+      </a>
+      <p>Visualize body joints and skeleton overlays to analyze performance effectively.</p>
+    </div>
+
+    <div class="feature-item">
+      <h3>Create Your Project</h3>
+      <a href="{{ url_for('login') }}">
+        <img src="{{ url_for('static', filename='Pose2.png') }}" alt="Pose Project" class="hover-img">
+      </a>
+      <p>Design and manage your AI-based pose analysis project seamlessly.</p>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer>
+    <p>© 2025 VYORIX | All Rights Reserved</p>
+  </footer>
+
+  <script>
+    // Hover play videos
+    const videos = document.querySelectorAll('.hover-video');
+    videos.forEach(video => {
+      video.addEventListener('mouseenter', () => video.play());
+      video.addEventListener('mouseleave', () => video.pause());
+    });
+  </script>
+</body>
+</html>

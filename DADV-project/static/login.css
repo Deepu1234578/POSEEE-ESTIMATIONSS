@@ -1,0 +1,232 @@
+/* Vyorix Login Page - Separate CSS File */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background: url('lohin.jpg') no-repeat center center/cover;
+  color: rgb(0, 0, 0);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
+
+/* Notification */
+.notification {
+  position: fixed;
+  top: -60px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #2ecc71;
+  color: white;
+  padding: 12px 25px;
+  border-radius: 6px;
+  font-weight: bold;
+  opacity: 0;
+  transition: all 0.5s ease;
+  z-index: 2000;
+}
+.notification.show {
+  top: 20px;
+  opacity: 1;
+}
+
+/* Container */
+.container {
+  background-color: #bfd9ec;
+  border-radius: 15px;
+  box-shadow: 0 14px 28px lab(95.82% -22.98 93.07),
+              0 10px 10px lab(84.26% -39.67 -21.33);
+  position: relative;
+  overflow: hidden;
+  width: 900px;
+  max-width: 100%;
+  min-height: 550px;
+  transition: all 0.6s ease-in-out;
+}
+
+/* Forms */
+.form-container {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 50%;
+  transition: all 0.6s ease-in-out;
+  z-index: 2;
+  opacity: 1;
+}
+
+.sign-in-container,
+.sign-up-container,
+.forgot-container,
+.email-signin-container {
+  left: 0;
+}
+
+.sign-up-container,
+.forgot-container,
+.email-signin-container {
+  opacity: 0;
+  z-index: 1;
+}
+
+/* Panel switches */
+.container.right-panel-active .sign-in-container {
+  transform: translateX(100%);
+}
+
+.container.right-panel-active .sign-up-container {
+  transform: translateX(100%);
+  opacity: 1;
+  z-index: 5;
+}
+
+.container.email-panel-active .email-signin-container {
+  transform: translateX(0);
+  opacity: 1;
+  z-index: 5;
+}
+
+.container.forgot-panel-active .sign-in-container {
+  transform: translateX(-100%);
+  opacity: 0;
+}
+
+.container.forgot-panel-active .forgot-container {
+  transform: translateX(0%);
+  opacity: 1;
+  z-index: 5;
+}
+
+/* Form content */
+form {
+  background-color: hsl(190, 64%, 87%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0 50px;
+  height: 100%;
+  text-align: center;
+}
+
+input, select {
+  background-color: #ffffff;
+  border: none;
+  padding: 12px 15px;
+  margin: 8px 0;
+  width: 100%;
+  border-radius: 8px;
+}
+
+button {
+  border-radius: 20px;
+  border: 1px solid hsl(272, 58%, 64%);
+  background-color: hsl(0, 0%, 0%);
+  color: #f5f5f5;
+  font-size: 14px;
+  font-weight: bold;
+  padding: 12px 45px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  transition: transform 80ms ease-in;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+button:active {
+  transform: scale(0.95);
+}
+
+a {
+  color: hsl(262, 62%, 64%);
+  font-size: 13px;
+  text-decoration: none;
+  margin-top: 8px;
+}
+
+/* Overlay styles */
+.overlay-container {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 50%;
+  height: 100%;
+  overflow: hidden;
+  transition: transform 0.6s ease-in-out;
+  z-index: 100;
+}
+
+.container.right-panel-active .overlay-container,
+.container.email-panel-active .overlay-container {
+  transform: translateX(-100%);
+}
+
+.overlay {
+  background: linear-gradient(to right, #4e9bff, #5a55ff);
+  color: #ffffff;
+  color: rgb(0, 0, 0);
+  position: relative;
+  left: -100%;
+  height: 100%;
+  width: 200%;
+  transform: translateX(0);
+  transition: transform 0.6s ease-in-out;
+}
+
+.container.right-panel-active .overlay,
+.container.email-panel-active .overlay {
+  transform: translateX(50%);
+}
+
+.overlay-panel {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0 40px;
+  text-align: center;
+  top: 0;
+  height: 100%;
+  width: 50%;
+}
+
+.overlay-left {
+  transform: translateX(-20%);
+}
+
+.container.right-panel-active .overlay-left,
+.container.email-panel-active .overlay-left {
+  transform: translateX(0);
+}
+
+.overlay-right {
+  right: 0;
+}
+
+.container.right-panel-active .overlay-right,
+.container.email-panel-active .overlay-right {
+  transform: translateX(20%);
+}
+
+small {
+  font-size: 12px;
+  margin-top: -4px;
+}
+
+/* Email Sign-In */
+.email-signin-container {
+  background-color: #fff;
+  left: 50%;
+  width: 50%;
+  top: 0;
+  opacity: 0;
+  z-index: 1;
+  transition: all 0.6s ease-in-out;
+}

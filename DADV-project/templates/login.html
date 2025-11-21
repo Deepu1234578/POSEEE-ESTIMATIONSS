@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VYORIX - Login</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}" />
+  <link rel="icon" href="{{ url_for('static', filename='Pose2.png') }}" type="image/png" />
+</head>
+<body>
+  <!-- Notification Banner -->
+  <div id="notification" class="notification">✔ Success!</div>
+
+  <div class="container" id="container">
+
+    <!-- Create Account Form -->
+    <div class="form-container sign-up-container">
+      <form id="createAccountForm">
+        <h1>Create Account</h1>
+        <input type="text" id="newUsername" placeholder="Username" required />
+        <input type="password" id="newPassword" placeholder="New Password" required />
+        <input type="password" id="confirmNewPassword" placeholder="Confirm Password" required />
+        <button type="submit">Create</button>
+      </form>
+    </div>
+
+    <!-- Username Login Form -->
+    <div class="form-container sign-in-container">
+      <form id="usernameLoginForm">
+        <h1>Login</h1>
+        <input type="text" id="usernameLogin" placeholder="Username" required />
+        <input type="password" id="passwordLogin" placeholder="Password" required />
+        <button type="submit">Login</button>
+        <a href="#" id="forgotPassword">Forgot Password?</a>
+      </form>
+    </div>
+
+    <!-- Email Login Form -->
+    <div class="form-container email-signin-container">
+      <form id="emailLoginForm">
+        <h1>Email Login</h1>
+        <input type="email" id="emailLogin" placeholder="Email" required />
+        <input type="password" id="emailPassword" placeholder="Password" required />
+        <button type="submit">Login</button>
+        <a href="#" id="backToMainLogin">Back to Username Login</a>
+      </form>
+    </div>
+
+    <!-- Forgot Password with OTP -->
+    <div class="form-container forgot-container">
+      <form id="forgotForm">
+        <h1>Reset Password</h1>
+        <p>Enter phone number to get OTP</p>
+
+        <div class="phone-group">
+          <select id="countryCode">
+            <option value="+91">🇮🇳 +91</option>
+            <option value="+1">🇺🇸 +1</option>
+            <option value="+44">🇬🇧 +44</option>
+            <option value="+61">🇦🇺 +61</option>
+            <option value="+81">🇯🇵 +81</option>
+            <option value="+971">🇦🇪 +971</option>
+          </select>
+
+          <input type="tel" id="phoneNumber" placeholder="Phone Number" maxlength="10" required />
+        </div>
+
+        <button type="button" id="sendOtp">Get OTP</button>
+        <input type="text" id="otpInput" placeholder="Enter OTP" maxlength="6" style="display:none;" />
+        <button type="submit" id="verifyOtp" style="display:none;">Verify OTP</button>
+
+        <a href="#" id="backToLogin">Back to Login</a>
+      </form>
+    </div>
+
+    <!-- Overlay Panels -->
+    <div class="overlay-container">
+      <div class="overlay">
+        <div class="overlay-panel overlay-left">
+          <h1>Welcome Back!</h1>
+          <p>Login to continue with <b>Vyorix</b>.</p>
+
+          <button class="ghost" id="signIn">Login</button>
+          <button class="ghost" id="emailSignIn">Email Login</button>
+        </div>
+
+        <div class="overlay-panel overlay-right">
+          <h1>Create Account</h1>
+          <p>Join Vyorix for smart pose analytics.</p>
+          <button class="ghost" id="signUp">Create</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const container = document.getElementById('container');
+    const notification = document.getElementById('notification');
+
+    const signUpButton = document.getElementById('signUp');
+    const signInButton = document.getElementById('signIn');
+    const emailSignInButton = document.getElementById('emailSignIn');
+    const forgotPassword = document.getElementById('forgotPassword');
+    const backToLogin = document.getElementById('backToLogin');
+    const backToMainLogin = document.getElementById('backToMainLogin');
+
+    // Panel Switching
+    signUpButton.onclick = () => container.classList.add('right-panel-active');
+    signInButton.onclick = () => {
+      container.classList.remove('right-panel-active');
+      container.classList.remove('email-panel-active');
+    };
+    emailSignInButton.onclick = () => {
+      container.classList.add('email-panel-active');
+      container.classList.remove('right-panel-active');
+    };
+    forgotPassword.onclick = () => container.classList.add('forgot-panel-active');
+    backToLogin.onclick = () => container.classList.remove('forgot-panel-active');
+    backToMainLogin.onclick = () => container.classList.remove('email-panel-active');
+
+    function showNotification(message, success = true) {
+      notification.textContent = message;
+      notification.style.background = success ? '#2ecc71' : '#e74c3c';
+      notification.classList.add('show');
+      setTimeout(() => notification.classList.remove('show'), 3000);
+    }
+
+    /* ---------------------- LOGIN VALIDATION ------------------------ */
+
+    document.getElementById('usernameLoginForm').addEventListener('submit',function (event) {
+      event.preventDefault();
+
+      const loginuser = document.getElementById("usernameLogin").value.trim();
+      const loginpass = document.getElementById("passwordLogin").value.trim();
+
+      const savedUser = localStorage.getItem('createdUser');
+      const savedPass = localStorage.getItem('createdPass');
+
+
+      //defult admin login
+      const adminUser = 'vyorix';
+      const adminPass = 'vyorix@123';
+
+      //Check login 
+      if (
+        (loginuser === adminUser && loginpass === adminPass) ||
+        (loginuser === savedUser && loginpass === savedPass)
+      ){
+        showNotification("Login Successful ✔", true);
+
+        setTimeout(() => {
+          window.location.href = "/pose_backend"; // Flash route
+        }, 1200);
+
+      } else {
+        showNotification('Invalid Usename or Password❌', false);
+      }
+    });
+      
+    /* ---------------------- EMAIL LOGIN ------------------------------ */
+
+    document.getElementById('emailLoginForm').addEventListener('submit', e => {
+      e.preventDefault();
+      const email = document.getElementById('emailLogin').value;
+      const pass = document.getElementById('emailPassword').value;
+
+      if (email === 'vyorix@gmail.com' && pass === 'vyorix@123') {
+        showNotification('Login Successful ✔', true);
+        setTimeout(() => window.location.href = '/pose_backend', 1200);
+      } else {
+        showNotification('Invalid Email Login ❌', false);
+      }
+    });
+
+    /* ---------------------- CREATE ACCOUNT --------------------------- */
+
+    document.getElementById('createAccountForm').addEventListener('submit', e => {
+      e.preventDefault();
+
+      const user = document.getElementById('newUsername').value;
+      const pass = document.getElementById('newPassword').value;
+      const cpass = document.getElementById('confirmNewPassword').value;
+
+      if (pass !== cpass) {
+        showNotification('Passwords Do Not Match ❌', false);
+        return;
+      }
+
+      localStorage.setItem('createdUser', user);
+      localStorage.setItem('createdPass', pass);
+
+      showNotification('Account Created ✔', true);
+
+      setTimeout(() => {
+        container.classList.remove('right-panel-active');
+      }, 1200);
+    });
+
+    /* ---------------------- OTP SYSTEM ------------------------------- */
+
+    let generatedOtp = '';
+
+    document.getElementById('sendOtp').onclick = () => {
+      const phone = document.getElementById('phoneNumber').value;
+
+      if (phone.length !== 10) {
+        showNotification('Enter 10-Digit Number ❌', false);
+        return;
+      }
+
+      generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
+      showNotification('OTP Sent: ' + generatedOtp, true);
+
+      document.getElementById('otpInput').style.display = 'block';
+      document.getElementById('verifyOtp').style.display = 'block';
+    };
+
+    document.getElementById('verifyOtp').onclick = e => {
+      e.preventDefault();
+      const entered = document.getElementById('otpInput').value;
+
+      if (entered === generatedOtp) {
+        showNotification('OTP Verified ✔', true);
+        setTimeout(() => window.location.href = '/pose_backend', 1200);
+      } else {
+        showNotification('Invalid OTP ❌', false);
+      }
+    };
+  </script>
+</body>
+</html>

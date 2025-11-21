@@ -1,0 +1,48 @@
+<!-- file: index.html -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>VYORIX — Title Card</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='title-card.css') }}">
+</head>
+<body>
+
+<div class="frame" role="img" aria-label="VYORIX title card">
+<div class="stage">
+<div class="logo-wrap">
+<img class="logo" src="{{ url_for('static', filename='logo-1.png') }}">
+</div>
+
+
+<div class="name-wrap">
+<div class="app-name" aria-hidden="false">
+<span style="--i:0">V</span>
+<span style="--i:1">Y</span>
+<span style="--i:2">O</span>
+<span style="--i:3">R</span>
+<span style="--i:4">I</span>
+<span style="--i:5">X</span>
+</div>
+<div class="subtitle">Pose Estimation</div>
+</div>
+</div>
+<div class="breath"></div>
+</div>
+
+
+<!-- Optional JS to advance on click/keypress -->
+<script>
+(function(){
+    function goNext(){
+        window.location.href = "{{ url_for('index') }}";
+// replace with your index page
+
+}
+document.addEventListener('click', goNext, { once: true });
+document.addEventListener('keydown', goNext, { once: true });
+})();
+</script>
+</body>
+</html>

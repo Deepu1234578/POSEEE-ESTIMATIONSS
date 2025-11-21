@@ -1,0 +1,247 @@
+/* Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+/* 🌌 MAIN PAGE BACKGROUND IMAGE */
+body {
+  background: url('BG-IMG.jpg') no-repeat center center fixed;
+  background-size: cover;
+  color: #ffffff;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Navbar */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 50px;
+  background: rgba(0, 0, 0, 0.7);
+  position: fixed;
+  width: 100%;
+  top: 0;
+  z-index: 10;
+  backdrop-filter: blur(8px);
+}
+
+.logo a {
+  color: #00fbff;
+  font-size: 1.6em;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  font-weight: bold;
+}
+
+.logo img {
+  height: 40px;
+  margin-right: 10px;
+}
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 25px;
+}
+
+.nav-links a {
+  color: #6203df;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s;
+}
+
+.nav-links a:hover {
+  color: #ffff00;
+}
+
+/* Hero Section */
+.hero {
+  padding-top: 80px;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: left;
+  width: 100%;
+  min-height: 80vh;
+  position: relative;
+}
+
+.hero-content {
+  max-width: 800px;
+  margin-left: 50px;
+  animation: fadeInLeft 1.8s ease;
+}
+
+.hero-content h1 {
+  font-size: 2.8rem;
+  color: #8000ff;
+  margin-bottom: 10px;
+  text-shadow: 0 0 20px hsl(64, 100%, 50%);
+}
+
+.highlight {
+  color: #c302fe;
+  text-shadow: 0 0 25px #fdfdfd;
+}
+
+.team-marquee {
+  font-size: 10mm;
+  color: #000000;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.main-info {
+  margin-top: 20px;
+  animation: fadeInUp 1.2s ease;
+}
+
+.main-info p {
+  font-size: 1.1rem;
+  line-height: 1.5;
+  margin-bottom: 15px;
+}
+
+.main-info ul {
+  list-style-type: disc;
+  margin-left: 20px;
+  margin-bottom: 20px;
+}
+
+.main-info ul li {
+  margin-bottom: 10px;
+  font-size: 1rem;
+}
+
+/* Button */
+.btn {
+  padding: 10px 25px;
+  background: #00ffff;
+  color: #fb0000;
+  border-radius: 25px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: transform 0.3s;
+}
+
+.btn:hover {
+  transform: scale(1.1);
+}
+
+/* 🌟 SPECIAL FEATURES SECTION BACKGROUND IMAGE */
+.features {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  min-height: 100vh;
+  padding: 100px 50px;
+
+  /* 🖼️ Background for Features section */
+  background: url('BG-IMG.jpg') no-repeat center center fixed;
+  background-size: cover;
+
+  /* Optional overlay for readability */
+  background-blend-mode: overlay;
+  background-color: rgba(0, 0, 0, 0.7);
+
+  text-align: center;
+  backdrop-filter: blur(6px);
+}
+
+.features h2 {
+  font-size: 2em;
+  margin-bottom: 50px;
+  color: #e1ff00;
+  text-shadow: 0 0 20px hsl(0, 100%, 50%);
+  animation: fadeInUp 1.2s ease;
+}
+
+.features-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+  justify-content: center;
+  width: 100%;
+  animation: fadeInUp 1.5s ease;
+}
+
+.feature-item {
+  width: 90%;
+  max-width: 700px;
+  background: rgba(169, 2, 246, 0.1);
+  border-radius: 15px;
+  padding: 30px;
+  box-shadow: 0 0 20px rgb(212, 0, 255);
+  transition: transform 0.4s, box-shadow 0.4s;
+}
+
+.feature-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0 40px rgba(0, 221, 255, 0.899);
+}
+
+.feature-item h3 {
+  margin-bottom: 15px;
+  color: #f9f9f9;
+}
+
+.feature-item video,
+.feature-item img {
+  width: 100%;
+  border-radius: 10px;
+  margin-bottom: 15px;
+}
+
+/* Hover animation for image */
+.img-animate {
+  transform: scale(1.05);
+  box-shadow: 0 0 30px #2fff00;
+  transition: all 0.4s ease;
+}
+
+.create-feature button {
+  margin-top: 15px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 25px;
+  background: #7b00ff;
+  color: #000000;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s;
+}
+
+.create-feature button:hover {
+  background: #0099ff;
+  transform: scale(1.1);
+}
+
+/* Footer */
+footer {
+  text-align: center;
+  padding: 15px;
+  background: rgba(0, 0, 0, 0.9);
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+/* Animations */
+@keyframes fadeInLeft {
+  from { opacity: 0; transform: translateX(-30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
+}

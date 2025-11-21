@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VYORIX - Pose Estimation</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='pose_style.css') }}" />
+  <link rel="icon" href="{{ url_for('static', filename='Pose2.png') }}" type="image/png">
+</head>
+
+<body>
+  <header>
+    <h1>🎯 VYORIX Pose Estimation</h1>
+    <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
+  </header>
+
+  <main>
+    <!-- UPLOAD AREA -->
+    <section class="upload-container">
+      <div class="upload-box floating">
+        <h2>📸 Upload Image</h2>
+        <form action="{{ url_for('pose_backend') }}" method="POST" enctype="multipart/form-data">
+          <input type="file" name="file" accept=".jpg,.jpeg,.png" required>
+          <button type="submit">Process Image</button>
+        </form>
+      </div>
+
+      <div class="upload-box floating delay">
+        <h2>🎥 Upload Video (MP4)</h2>
+        <form action="{{ url_for('pose_backend') }}" method="POST" enctype="multipart/form-data">
+          <input type="file" name="file" accept=".mp4" required>
+          <button type="submit">Process Video</button>
+        </form>
+      </div>
+    </section>
+
+    {% if message %}
+      <p class="message">{{ message }}</p>
+    {% endif %}
+
+    {% if result_img or result_vid %}
+    <section class="results">
+      <h2>✨ Pose Estimation Results</h2>
+      
+      <!-- IMAGE RESULTS -->
+      {% if result_img %}
+      <div class="result-card">
+        <h3>Before & After (Image)</h3>
+        <div class="media-display">
+          <img src="{{ url_for('static', filename='uploads/' + input_img) }}" alt="Original Image">
+          <img src="{{ url_for('static', filename='results/' + result_img) }}" alt="Processed Image">
+        </div>
+        <div class="pose-info">
+          <h3>Pose Landmark Information</h3>
+
+          <p>The green and red dotted points represent pose landmarks detected by MediaPipe.</p>
+
+          <div class="legend-box">
+            <p><strong>Legend:</strong></p>
+            <p>- Green circles/lines : Body connections & detected joints</p>
+            <p>- Red circles : Critical joint points</p>
+          </div>
+
+          <div class="joints-box">
+            <p><strong>Main Body Joints Detected:</strong></p>
+            <p>- Nose, Eyes, Ears</p>
+            <p>- Shoulders (Left & Right)</p>
+            <p>- Elbows (Left & Right)</p>
+            <p>- Wrists (Left & Right)</p>
+            <p>- Hips (Left & Right)</p>
+            <p>- Knees (Left & Right)</p>
+            <p>- Ankles (Left & Right)</p>
+          </div>
+        </div>
+
+        {% if pdf_path_img %}
+          <a href="{{ url_for('download_file', filename=pdf_path_img) }}" class="download-btn">⬇ Download PDF</a>
+        {% endif %}
+      </div>
+      {% endif %}
+
+      <!-- VIDEO RESULTS -->
+      {% if result_vid %}
+      <div class="result-card">
+        <h3>Before & After (Video)</h3>
+
+        <div class="media-display">
+          <video controls width="500" id="inputVideo">
+            <source src="{{ url_for('static', filename='uploads/' ~ input_vid) }}" type="video/mp4">
+          </video>
+
+          <video controls width="500" id="processedVideo">
+            <source src="{{ url_for('static', filename='results/' ~ result_vid) }}" type="video/mp4">
+          </video>
+        </div>
+        <div class="pose-info">
+          <h3>Pose Landmark Information</h3>
+
+          <p>The green and red dotted points represent pose landmarks detected frame-by-frame using MediaPipe.</p>
+
+          <div class="legend-box">
+            <p><strong>Legend:</strong></p>
+            <p>- Green circles/lines : Body posture connections</p>
+            <p>- Red circles : Critical joint positions</p>
+          </div>
+
+          <div class="joints-box">
+            <p><strong>Main Body Joints Detected:</strong></p>
+            <p>- Nose, Eyes, Ears</p>
+            <p>- Shoulders (Left & Right)</p>
+            <p>- Elbows (Left & Right)</p>
+            <p>- Wrists (Left & Right)</p>
+            <p>- Hips (Left & Right)</p>
+            <p>- Knees (Left & Right)</p>
+            <p>- Ankles (Left & Right)</p>
+          </div>
+        </div>
+
+
+        {% if pdf_path_vid %}
+          <a id="downloadVideoLink" 
+             href="{{ url_for('static', filename='results/' ~ result_vid) }}"
+             download="{{ result_vid }}" 
+             class="download-btn">
+            ⬇ Download Processed Video
+          </a>
+        {% endif %}
+      </div>
+      {% endif %}
+
+    </section>
+    {% endif %}
+  </main>
+
+  <footer>
+    <p>© 2025 VYORIX | Intelligent Pose Analytics | Auto logout enabled</p>
+  </footer>
+
+  <script>
+    // Auto logout when tab closed
+    window.addEventListener("beforeunload", () => {
+      navigator.sendBeacon("{{ url_for('logout') }}");
+    });
+
+    // Auto-download processed video
+    window.addEventListener("load", () => {
+      const processedVideo = document.getElementById("processedVideo");
+      const downloadLink = document.getElementById("downloadVideoLink");
+
+      if (processedVideo && downloadLink) {
+        processedVideo.addEventListener("loadeddata", () => {
+          setTimeout(() => {
+            const a = document.createElement("a");
+            a.href = downloadLink.href;
+            a.download = downloadLink.getAttribute("download");
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+          }, 1500);
+        });
+      }
+    });
+  </script>
+
+</body>
+</html>

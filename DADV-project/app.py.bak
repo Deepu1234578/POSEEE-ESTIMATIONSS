@@ -1,0 +1,232 @@
+import os
+import cv2
+import mediapipe as mp
+from flask import Flask, render_template, request, redirect, url_for, send_from_directory, session, flash
+from werkzeug.utils import secure_filename
+from fpdf import FPDF
+
+app = Flask(__name__)
+app.secret_key = "vyorix_secret_key"
+
+# ------------------- FOLDERS -------------------
+UPLOAD_FOLDER = 'static/uploads'
+RESULT_FOLDER = 'static/results'
+PDF_FOLDER = 'static/pdf'
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+os.makedirs(RESULT_FOLDER, exist_ok=True)
+os.makedirs(PDF_FOLDER, exist_ok=True)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['RESULT_FOLDER'] = RESULT_FOLDER
+app.config['PDF_FOLDER'] = PDF_FOLDER
+
+# ------------------- MEDIAPIPE -------------------
+mp_pose = mp.solutions.pose
+mp_drawing = mp.solutions.drawing_utils
+
+# ------------------- LOGIN CREDENTIALS -------------------
+USERNAME = "vyorix"
+PASSWORD = "vyorix@123"
+
+# ------------------- ROUTES -------------------
+
+@app.route('/')
+def index():
+    """Homepage"""
+    return render_template('index.html')
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    """Handles login and redirects to Pose Estimation if successful"""
+    message = None
+    if request.method == 'POST':
+        username = request.form.get('username') or request.form.get('email')
+        password = request.form.get('password')
+        if username == USERNAME and password == PASSWORD:
+            session['logged_in'] = True
+            flash("Login successful!", "success")
+            return redirect(url_for('pose_backend'))
+        else:
+            message = "Invalid credentials!"
+    return render_template('login.html', message=message)
+
+@app.route('/signup', methods=['POST'])
+def signup():
+    """Handles account creation (dummy example)"""
+    name = request.form.get('name')
+    email = request.form.get('email')
+    password = request.form.get('password')
+    confirm = request.form.get('confirm_password')
+
+    if password != confirm:
+        return render_template('login.html', message="Passwords do not match!")
+    # You can save users in a real DB later
+    flash("Account created successfully! Please log in.", "info")
+    return redirect(url_for('login'))
+
+@app.route('/verify', methods=['POST'])
+def verify():
+    """Verifies OTP (dummy 6-digit check)"""
+    otp = request.form.get('otp')
+    if otp == "123456":
+        session['logged_in'] = True
+        flash("OTP verified successfully!", "success")
+        return redirect(url_for('pose_backend'))
+    else:
+        flash("Invalid OTP, please try again!", "danger")
+        return redirect(url_for('login'))
+
+@app.route('/logout')
+def logout():
+    """Logs out and redirects to index page"""
+    session.clear()
+    flash("Logged out successfully!", "info")
+    return redirect(url_for('index'))
+
+@app.route('/pose', methods=['GET', 'POST'])
+def pose_backend():
+    """Main Pose Estimation Page (requires login)"""
+    if not session.get('logged_in'):
+        return redirect(url_for('login'))
+
+    result_img = None
+    result_vid = None
+    pdf_path_img = None
+    pdf_path_vid = None
+    message = None
+
+    if request.method == 'POST':
+        if 'file' not in request.files:
+            message = "No file part!"
+        else:
+            file = request.files['file']
+            if file.filename == '':
+                message = "No selected file!"
+            else:
+                filename = secure_filename(file.filename)
+                filepath = os.path.join(UPLOAD_FOLDER, filename)
+                file.save(filepath)
+
+                if filename.lower().endswith(('.png', '.jpg', '.jpeg')):
+                    result_img = process_image(filepath, filename)
+                    if result_img:
+                        pdf_path_img = generate_pdf(filepath, result_img, filename)
+                    else:
+                        message = "Image processing error!"
+                elif filename.lower().endswith('.mp4'):
+                    result_vid = process_video(filepath, filename)
+                    if result_vid:
+                        pdf_path_vid = generate_pdf_video(filepath, result_vid, filename)
+                    else:
+                        message = "Video processing error!"
+                else:
+                    message = "Unsupported file type!"
+
+    return render_template(
+        'pose_backend.html',
+        result_img=result_img,
+        result_vid=result_vid,
+        pdf_path_img=pdf_path_img,
+        pdf_path_vid=pdf_path_vid,
+        message=message
+    )
+
+@app.route('/download/<path:filename>')
+def download_file(filename):
+    """Allows downloading processed files or PDFs"""
+    folder = PDF_FOLDER if filename.endswith('.pdf') else RESULT_FOLDER
+    abs_file = os.path.join(folder, filename)
+    if not os.path.exists(abs_file):
+        flash("File not found.", "danger")
+        return redirect(url_for('pose_backend'))
+    return send_from_directory(folder, filename, as_attachment=True)
+
+# ------------------- POSE PROCESSING -------------------
+def process_image(path, filename):
+    img = cv2.imread(path)
+    if img is None:
+        return None
+    with mp_pose.Pose(static_image_mode=True) as pose:
+        img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        results = pose.process(img_rgb)
+        annotated = img.copy()
+        if results.pose_landmarks:
+            mp_drawing.draw_landmarks(annotated, results.pose_landmarks, mp_pose.POSE_CONNECTIONS)
+        out_path = os.path.join(RESULT_FOLDER, f'pose_{filename}')
+        cv2.imwrite(out_path, annotated)
+    return out_path
+
+def process_video(path, filename):
+    cap = cv2.VideoCapture(path)
+    if not cap.isOpened():
+        return None
+
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+    out_path = os.path.join(RESULT_FOLDER, f'pose_{filename}')
+    fps = int(cap.get(cv2.CAP_PROP_FPS))
+    width  = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    out = cv2.VideoWriter(out_path, fourcc, fps, (width, height))
+
+    with mp_pose.Pose(static_image_mode=False) as pose:
+        while True:
+            ret, frame = cap.read()
+            if not ret:
+                break
+            frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            results = pose.process(frame_rgb)
+            if results.pose_landmarks:
+                mp_drawing.draw_landmarks(frame, results.pose_landmarks, mp_pose.POSE_CONNECTIONS)
+            out.write(frame)
+
+    cap.release()
+    out.release()
+    return out_path
+
+# ------------------- PDF GENERATION -------------------
+def generate_pdf(original_img, annotated_img, filename):
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font("Arial", 'B', 16)
+    pdf.cell(0, 10, "Pose Estimation Report (Image)", 0, 1, 'C')
+    pdf.ln(10)
+    pdf.cell(0, 10, "Original Image", 0, 1)
+    pdf.image(original_img, x=30, w=150)
+    pdf.ln(10)
+    pdf.cell(0, 10, "Annotated Image", 0, 1)
+    pdf.image(annotated_img, x=30, w=150)
+    pdf_filename = os.path.join(PDF_FOLDER, f'pose_img_{filename}.pdf')
+    pdf.output(pdf_filename)
+    return pdf_filename
+
+def generate_pdf_video(original_vid, annotated_vid, filename):
+    import tempfile
+    cap = cv2.VideoCapture(original_vid)
+    ret, frame_orig = cap.read()
+    cap_ann = cv2.VideoCapture(annotated_vid)
+    ret2, frame_ann = cap_ann.read()
+    cap.release()
+    cap_ann.release()
+    if not (ret and ret2):
+        return None
+    tmp_orig = tempfile.NamedTemporaryFile(suffix=".jpg", delete=False)
+    tmp_ann = tempfile.NamedTemporaryFile(suffix=".jpg", delete=False)
+    cv2.imwrite(tmp_orig.name, frame_orig)
+    cv2.imwrite(tmp_ann.name, frame_ann)
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font("Arial", 'B', 16)
+    pdf.cell(0, 10, "Pose Estimation Report (Video Preview)", 0, 1, 'C')
+    pdf.ln(10)
+    pdf.cell(0, 10, "Original Video First Frame", 0, 1)
+    pdf.image(tmp_orig.name, x=30, w=150)
+    pdf.ln(10)
+    pdf.cell(0, 10, "Annotated Video First Frame", 0, 1)
+    pdf.image(tmp_ann.name, x=30, w=150)
+    pdf_filename = os.path.join(PDF_FOLDER, f'pose_vid_{filename}.pdf')
+    pdf.output(pdf_filename)
+    os.unlink(tmp_orig.name)
+    os.unlink(tmp_ann.name)
+    return pdf_filename
+
+if __name__ == '__main__':
+    app.run(debug=True)
