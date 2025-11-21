@@ -230,3 +230,4 @@ def generate_pdf_video(original_vid, annotated_vid, filename):
 
 if __name__ == '__main__':
     app.run(debug=True)
+
