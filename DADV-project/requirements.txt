@@ -1,0 +1,6 @@
+Flask
+Werkzeug
+mediapipe
+opencv-python
+gunicorn
+numpy
